@@ -1,0 +1,201 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the rating_formula module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function rating_system_schema() {
+  $schema['rating_formula'] = array(
+    'description' => 'The base table for rating_formulas.',
+    'fields' => array(
+      'rgid' => array(
+        'description' => 'The primary identifier for a rating_formula.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      // Defaults to NULL in order to avoid a brief period of potential
+      // deadlocks on the index.
+      'vid' => array(
+        'description' => 'The current {rating_formula_revision}.vid version identifier.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => NULL,
+      ),
+      'label' => array(
+        'description' => 'The label of this rating_formula, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'The machine name of this rating_formula, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the rating_formula was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the rating_formula was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'entity_type' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "The system name of the entity this rating group is attached to.",
+      ),
+      'entity_bundle' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "The bundle of the entity this rating group is attached to.",
+      ),
+      'status' => array(
+        'type' => 'int', 
+        'not null' => TRUE,
+        // Set the default to ENTITY_CUSTOM without using the constant as it is
+        // not safe to use it at this point. 
+        'default' => 0x01, 
+        'size' => 'tiny', 
+        'description' => 'The exportable status of the entity.',
+      ), 
+      'module' => array(
+        'description' => 'The name of the providing module if the entity has been defined in code.', 
+        'type' => 'varchar', 
+        'length' => 255, 
+        'not null' => FALSE,
+      ),
+      'calculation' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => "The calculation of this rating group.",
+      ),
+    ),
+    'indexes' => array(
+      'rating_formula_changed' => array('changed'),
+      'rating_formula_created' => array('created'),
+    ),
+    'unique keys' => array(
+      'vid' => array('vid'),
+    ),
+    'foreign keys' => array(
+      'rating_formula_revision' => array(
+        'table' => 'rating_formula_revision',
+        'columns' => array('vid' => 'vid'),
+      ),
+    ),
+    'primary key' => array('rgid'),
+  );
+
+  $schema['rating_formula_revision'] = array(
+    'description' => 'Stores information about each saved version of a {rating_formula}.',
+    'fields' => array(
+      'rgid' => array(
+        'description' => 'The primary identifier for a rating_formula.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      // Defaults to NULL in order to avoid a brief period of potential
+      // deadlocks on the index.
+      'vid' => array(
+        'description' => 'The current {rating_formula_revision}.vid version identifier.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => FALSE,
+        'default' => NULL,
+      ),
+      'label' => array(
+        'description' => 'The label of this rating_formula, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'name' => array(
+        'description' => 'The machine name of this rating_formula, always treated as non-markup plain text.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the rating_formula was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp when the rating_formula was most recently saved.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'entity_type' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "The system name of the entity this rating group is attached to.",
+      ),
+      'entity_bundle' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => "The bundle of the entity this rating group is attached to.",
+      ),
+      'status' => array(
+        'type' => 'int', 
+        'not null' => TRUE,
+        // Set the default to ENTITY_CUSTOM without using the constant as it is
+        // not safe to use it at this point. 
+        'default' => 0x01, 
+        'size' => 'tiny', 
+        'description' => 'The exportable status of the entity.',
+      ), 
+      'module' => array(
+        'description' => 'The name of the providing module if the entity has been defined in code.', 
+        'type' => 'varchar', 
+        'length' => 255, 
+        'not null' => FALSE,
+      ),
+      'calculation' => array(
+        'type' => 'text',
+        'not null' => FALSE,
+        'size' => 'big',
+        'description' => "The calculation of this rating group.",
+      ),
+    ),
+    'indexes' => array(
+      'rgid' => array('rgid'),
+    ),
+    'primary key' => array('vid'),
+    'foreign keys' => array(
+      'versioned_rating_formula' => array(
+        'table' => 'rating_formula',
+        'columns' => array('rgid' => 'rgid'),
+      ),
+    ),
+  );
+
+  return $schema;
+}

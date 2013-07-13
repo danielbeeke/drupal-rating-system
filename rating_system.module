@@ -1,0 +1,118 @@
+<?php
+
+/**
+ * Implements hook_entity_info().
+ */
+function rating_system_entity_info() {
+  $return = array(
+    'rating_formula' => array(
+      'label' => t('Rating formula'),
+      'plural label' => t('Rating formulas'),
+      'description' => t('A Rating formula'),
+      'entity class' => 'RatingFormula',
+      'controller class' => 'EntityAPIControllerExportable',
+      'views controller class' => 'EntityDefaultViewsController',
+      'base table' => 'rating_formula',
+      'exportable' => TRUE,
+        'module' => 'rating_system',
+      'entity keys' => array(
+        'id' => 'rgid',
+        'name' => 'name',
+        'label' => 'label',
+      ),
+      'admin ui' => array(
+        'path' => 'admin/structure/rating-system/rating-formulas',
+        'file' => 'rating_system.rating_formula.admin.inc',
+      ),
+      'access arguments' => array('administer rating formulas'),
+    ),
+  );
+
+  return $return;
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function rating_system_field_extra_fields() {
+  $rating_formulas = rating_formula_load();
+
+  if ($rating_formulas) {
+    foreach ($rating_formulas as $rating_formula) {
+      // With this we add it to the view of an entity.
+      // Weights and stuff will work because of this too.
+      $extra[$rating_formula->entity_type][$rating_formula->entity_bundle] = array(
+        'display' => array(
+          'rating_system_' . $rating_formula->name => array(
+            'label' => $rating_formula->label . ' ' . t('(Rating system)'),
+            'weight' => 0,
+          ),
+        )
+      );
+    }
+
+    return $extra;
+  }
+}
+
+/**
+ * Implements hook_entity_view_alter().
+ */
+function rating_system_entity_view_alter(&$build, $type) {
+  if ($type != 'rating_formula') {
+    $rating_formulas = rating_formula_load();
+    if ($rating_formulas) {
+      foreach ($rating_formulas as $rating_formula) {
+        if ($rating_formula->entity_type == $type && $rating_formula->entity_bundle == $build['#bundle']) {
+          // Attach our extra field.
+          $build['rating_system_' . $rating_formula->name] = array(
+            '#type' => 'markup',
+            '#markup' => '<span>' . $rating_formula->label . '</span>'
+          );
+        }
+      }
+    }
+  }  
+}
+
+/**
+ * Implements hook_permission().
+ */
+function rating_system_permission() {
+  return array(
+    'administer rating formulas' =>  array(
+      'title' => t('Administer rating formulas'),
+      'description' => t('Administer rating formulas'),
+    ),
+  );
+}
+
+/**
+ * Use a separate class for Rating formulas so we can specify some defaults
+ * modules may alter.
+ */
+class RatingFormula extends Entity {
+
+  /**
+   * Returns whether the Rating formula is locked, thus may not be deleted or renamed.
+   *
+   * Rating formulas provided in code are automatically treated as locked, as well
+   * as any fixed Rating formula.
+   */
+  public function isLocked() {
+    return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
+  }
+}
+
+/**
+* Gets an array of all Rating formulas, keyed by the type name.
+*
+* @param $type_name
+*   If set, the type with the given name is returned.
+* @return RatingFormula[]
+*   Depending whether $type isset, an array of Rating formulas or a single one.
+*/
+function rating_formula_load($group_name = NULL) {
+  $groups = entity_load_multiple_by_name('rating_formula', isset($group_name) ? array($group_name) : FALSE);
+  return isset($group_name) ? reset($groups) : $groups;
+}
