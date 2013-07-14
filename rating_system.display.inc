@@ -57,49 +57,27 @@ function rating_system_entity_load($entities, $type) {
 }
 
 /**
- * Implements hook_entity_view_alter().
- * Attach our extra fields to the display.
+ * Implements hook_entity_view().
  */
-function rating_system_entity_view_alter(&$build, $type) {
+function rating_system_entity_view($entity, $type, $view_mode, $langcode) {
   if ($type != 'rating_formula') {
     $entity_info = entity_get_info($type);
 
-    $rating_formulas = rating_formula_load_multiple_by_entity_type_and_bundle($type, $build['#bundle']);
+    // An entity type can have bundles but it isn't required.
+    $bundle_key = isset($entity_info['bundle keys']['bundle']) ? $entity_info['bundle keys']['bundle'] : NULL;
+    $bundle = isset($entity->{$bundle_key}) ? $entity->{$bundle_key} : NULL;
+
+    $rating_formulas = rating_formula_load_multiple_by_entity_type_and_bundle($type, $bundle);
     if ($rating_formulas) {
       foreach ($rating_formulas as $rating_formula) {
-        $key = rating_system_get_entity_render_key($type);
-        $score = $build['#' . $key]->{'rating_system_' . $rating_formula->name};
+        $score = $entity->{'rating_system_' . $rating_formula->name};
 
         // Attach our extra field.
-        $build['rating_system_' . $rating_formula->name] = array(
+        $entity->content['rating_system_' . $rating_formula->name] = array(
           '#type' => 'markup',
           '#markup' => '<span>' . $score . '</span>'
         );
       }
     }
-  }  
-}
-
-/**
- * Returns the entity render array key name by entity name.
- * TODO discover why this is needed.
- * Or where I am making a mistake.
- *
- * This is build upon the idea that I need to add
- * values to an entity on hook_entity_load and add the theme functions
- * on hook_entity_view_alter.
- * This way the scores are in the load and the theming happens in the view.
- */
-function rating_system_get_entity_render_key($entity_type) {
-  $keys = array(
-    'node' => 'node',
-    'user' => 'account',
-  );
-
-  if (isset($keys[$entity_type])) {
-    return $keys[$entity_type];
-  }
-  else {
-    return 'content';
   }
 }

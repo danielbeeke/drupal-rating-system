@@ -68,6 +68,13 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
     '#default_value' => isset($rating_formula->calculation) ? $rating_formula->calculation : '',
   );
 
+  $form['tokens'] = array(
+    '#theme' => 'token_tree',
+    '#token_types' => array('node'), // The token types that have specific context. Can be multiple token types like 'term' and/or 'user'
+    '#global_types' => TRUE, // A boolean TRUE or FALSE whether to include 'global' context tokens like [current-user:*] or [site:*]. Defaults to TRUE.
+    '#click_insert' => TRUE, // A boolean whether to include the 'Click this token to insert in into the the focused textfield' JavaScript functionality. Defaults to TRUE.
+  );
+
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
