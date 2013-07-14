@@ -2,17 +2,17 @@
 
 /**
  * @file
- * Rating System rating groups form.
+ * Rating System rating formulas form.
  */
 
 /**
-* Form for editing/adding rating groups
+* Form for editing/adding rating formulas
 */
 function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') {
   // Get all entity information
   $entity_info = entity_get_info();
 
-  // You can not rate a rating group entity.
+  // You can not rate a rating formula entity.
   foreach($entity_info as $entity_key => $entity) {
     if($entity_key == 'rating_formula') {
       unset($entity_info[$entity_key]);
@@ -50,7 +50,7 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
       'exists' => 'rating_formula_load',
       'source' => array('label'),
     ),
-    '#description' => t('A unique machine-readable name for this rating group. It must only contain lowercase letters, numbers, and underscores.'),
+    '#description' => t('A unique machine-readable name for this rating formula. It must only contain lowercase letters, numbers, and underscores.'),
   );
 
   $form['entity_type_and_bundle'] = array(
@@ -58,7 +58,7 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
     '#title' => t('Enitity bundle'),
     '#options' => $entity_tree,
     '#default_value' => $combined_entity_and_bundle,
-    '#description' => t('The entity bundle you want to attach this rating group to.'),
+    '#description' => t('The entity bundle you want to attach this rating formula to.'),
   );
 
   $form['calculation'] = array(
@@ -71,7 +71,7 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save rating group'),
+    '#value' => t('Save rating formula'),
   );
 
   return $form;
@@ -119,5 +119,5 @@ function rating_formula_form_submit(&$form, &$form_state) {
   // Save and go back.
   $rating_formula->save();
   // Redirect
-  $form_state['redirect'] = 'admin/structure/rating-system/rating-groups';
+  $form_state['redirect'] = 'admin/structure/rating-system/rating-formulas';
 }

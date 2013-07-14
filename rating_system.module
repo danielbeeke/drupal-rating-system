@@ -24,6 +24,7 @@ function rating_system_entity_info() {
         'path' => 'admin/structure/rating-system/rating-formulas',
         'file' => 'rating_system.rating_formula.admin.inc',
       ),
+      'access callback' => 'rating_formula_access',
       'access arguments' => array('administer rating formulas'),
     ),
   );
@@ -32,15 +33,21 @@ function rating_system_entity_info() {
 }
 
 /**
+ * Access callback.
+ */
+function rating_formula_access($permission) {
+  return user_access($permission);
+}
+
+/**
  * Implements hook_field_extra_fields().
+ * Declare our extra fields to the field UI
  */
 function rating_system_field_extra_fields() {
   $rating_formulas = rating_formula_load();
 
   if ($rating_formulas) {
     foreach ($rating_formulas as $rating_formula) {
-      // With this we add it to the view of an entity.
-      // Weights and stuff will work because of this too.
       $extra[$rating_formula->entity_type][$rating_formula->entity_bundle] = array(
         'display' => array(
           'rating_system_' . $rating_formula->name => array(
@@ -57,19 +64,18 @@ function rating_system_field_extra_fields() {
 
 /**
  * Implements hook_entity_view_alter().
+ * Attach our extra fields to the display.
  */
 function rating_system_entity_view_alter(&$build, $type) {
   if ($type != 'rating_formula') {
-    $rating_formulas = rating_formula_load();
+    $rating_formulas = rating_formula_load_multiple_by_entity_type_and_bundle($type, $build['#bundle']);
     if ($rating_formulas) {
       foreach ($rating_formulas as $rating_formula) {
-        if ($rating_formula->entity_type == $type && $rating_formula->entity_bundle == $build['#bundle']) {
-          // Attach our extra field.
-          $build['rating_system_' . $rating_formula->name] = array(
-            '#type' => 'markup',
-            '#markup' => '<span>' . $rating_formula->label . '</span>'
-          );
-        }
+        // Attach our extra field.
+        $build['rating_system_' . $rating_formula->name] = array(
+          '#type' => 'markup',
+          '#markup' => '<span>' . $rating_formula->label . '</span>'
+        );
       }
     }
   }  
@@ -107,12 +113,37 @@ class RatingFormula extends Entity {
 /**
 * Gets an array of all Rating formulas, keyed by the type name.
 *
-* @param $type_name
-*   If set, the type with the given name is returned.
+* @param $mixed
+*   May be a formula name.
 * @return RatingFormula[]
 *   Depending whether $type isset, an array of Rating formulas or a single one.
 */
-function rating_formula_load($group_name = NULL) {
-  $groups = entity_load_multiple_by_name('rating_formula', isset($group_name) ? array($group_name) : FALSE);
-  return isset($group_name) ? reset($groups) : $groups;
+function rating_formula_load($rating_formula_name = NULL) {
+  $rating_formulas = entity_load_multiple_by_name('rating_formula', isset($rating_formula_name) ? array($rating_formula_name) : FALSE);
+  return isset($rating_formula_name) ? reset($rating_formulas) : $rating_formulas;
+}
+
+/**
+* Gets an array of all Rating formulas, keyed by the type name.
+*
+* @param $entity_type
+*   Entity type.
+* @param $entity_bundle
+*   Entity bundle.
+* @return RatingFormula[]
+*   Depending whether $type isset, an array of Rating formulas or a single one.
+*/
+function rating_formula_load_multiple_by_entity_type_and_bundle($entity_type = NULL, $entity_bundle = NULL) {
+  $query = new EntityFieldQuery();
+
+  $query->entityCondition('entity_type', 'rating_formula');
+  if ($entity_type) { $query->propertyCondition('entity_type', $entity_type); }
+  if ($entity_bundle) { $query->propertyCondition('entity_bundle', $entity_bundle); }
+  $query->addMetaData('account', user_load(1)); // Run the query as user 1.
+  $result = $query->execute();
+
+  $rating_formula_ids = array_keys($result['rating_formula']);
+  $rating_formulas = entity_load('rating_formula', $rating_formula_ids);
+
+  return $rating_formulas;
 }
