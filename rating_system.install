@@ -12,7 +12,7 @@ function rating_system_schema() {
   $schema['rating_formula'] = array(
     'description' => 'The base table for rating_formulas.',
     'fields' => array(
-      'rgid' => array(
+      'rfid' => array(
         'description' => 'The primary identifier for a rating_formula.',
         'type' => 'serial',
         'unsigned' => TRUE,
@@ -102,22 +102,22 @@ function rating_system_schema() {
         'columns' => array('vid' => 'vid'),
       ),
     ),
-    'primary key' => array('rgid'),
+    'primary key' => array('rfid'),
   );
 
   $schema['rating_formula_revision'] = array(
     'description' => 'Stores information about each saved version of a {rating_formula}.',
     'fields' => array(
-      'rgid' => array(
-        'description' => 'The primary identifier for a rating_formula.',
+      'vid' => array(
+        'description' => 'The current {rating_formula_revision}.vid version identifier.',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
       // Defaults to NULL in order to avoid a brief period of potential
       // deadlocks on the index.
-      'vid' => array(
-        'description' => 'The current {rating_formula_revision}.vid version identifier.',
+      'rfid' => array(
+        'description' => 'The primary identifier for a rating_formula.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => FALSE,
@@ -186,13 +186,13 @@ function rating_system_schema() {
       ),
     ),
     'indexes' => array(
-      'rgid' => array('rgid'),
+      'rfid' => array('rfid'),
     ),
     'primary key' => array('vid'),
     'foreign keys' => array(
       'versioned_rating_formula' => array(
         'table' => 'rating_formula',
-        'columns' => array('rgid' => 'rgid'),
+        'columns' => array('rfid' => 'rfid'),
       ),
     ),
   );

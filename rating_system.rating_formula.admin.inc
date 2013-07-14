@@ -113,6 +113,9 @@ function rating_formula_form_submit(&$form, &$form_state) {
     $rating_formula->created = REQUEST_TIME;
   }
 
+  // Create a new revision with every save.
+  $rating_formula->revision = TRUE;
+
   // Set the changed time.
   $rating_formula->changed = REQUEST_TIME;
 
