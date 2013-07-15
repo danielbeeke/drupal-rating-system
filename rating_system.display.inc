@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * All display related functions and hooks.
+ */
 
 /**
  * Implements hook_field_extra_fields().
@@ -53,7 +57,7 @@ function rating_system_entity_load($entities, $type) {
         }
       }
     }
-  }  
+  }
 }
 
 /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Install, update and uninstall functions for the rating_formula module.
@@ -68,18 +67,18 @@ function rating_system_schema() {
         'description' => "The bundle of the entity this rating group is attached to.",
       ),
       'status' => array(
-        'type' => 'int', 
+        'type' => 'int',
         'not null' => TRUE,
         // Set the default to ENTITY_CUSTOM without using the constant as it is
-        // not safe to use it at this point. 
-        'default' => 0x01, 
-        'size' => 'tiny', 
+        // not safe to use it at this point.
+        'default' => 0x01,
+        'size' => 'tiny',
         'description' => 'The exportable status of the entity.',
-      ), 
+      ),
       'module' => array(
-        'description' => 'The name of the providing module if the entity has been defined in code.', 
-        'type' => 'varchar', 
-        'length' => 255, 
+        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => FALSE,
       ),
       'calculation' => array(
@@ -164,18 +163,18 @@ function rating_system_schema() {
         'description' => "The bundle of the entity this rating group is attached to.",
       ),
       'status' => array(
-        'type' => 'int', 
+        'type' => 'int',
         'not null' => TRUE,
         // Set the default to ENTITY_CUSTOM without using the constant as it is
-        // not safe to use it at this point. 
-        'default' => 0x01, 
-        'size' => 'tiny', 
+        // not safe to use it at this point.
+        'default' => 0x01,
+        'size' => 'tiny',
         'description' => 'The exportable status of the entity.',
-      ), 
+      ),
       'module' => array(
-        'description' => 'The name of the providing module if the entity has been defined in code.', 
-        'type' => 'varchar', 
-        'length' => 255, 
+        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => FALSE,
       ),
       'calculation' => array(

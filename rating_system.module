@@ -1,4 +1,10 @@
 <?php
+/**
+* @file
+* The main file for the rating system module.
+*
+* Here we include all the other files.
+*/
 
 include_once('rating_system.crud.inc');
 include_once('rating_system.score.inc');

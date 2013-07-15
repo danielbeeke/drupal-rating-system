@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Replace token hooks for the module statistics.
+ */
 
 /**
  * Implements hook_tokens for statistics.
@@ -52,7 +56,7 @@ function rating_system_statistics_tokens($type, $tokens, array $data = array(), 
 function rating_system_statistics_get($node) {
   if ($node->nid > 0) {
     // Retrieve an array with both totalcount and daycount.
-    $result = db_query('SELECT totalcount, daycount, timestamp FROM {node_counter} WHERE nid = :nid AND timestamp >= :time_from AND timestamp <= :time_to', 
+    $result = db_query('SELECT totalcount, daycount, timestamp FROM {node_counter} WHERE nid = :nid AND timestamp >= :time_from AND timestamp <= :time_to',
       array(
         ':nid' => $node->nid,
         ':time_from' => $node->rating_system['time_from'],

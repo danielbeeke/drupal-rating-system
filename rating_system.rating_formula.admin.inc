@@ -67,7 +67,7 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
   $form['tokens'] = array(
     '#theme' => 'token_tree',
     '#token_types' => array($rating_formula->entity_type),
-    '#global_types' => TRUE, 
+    '#global_types' => TRUE,
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -104,7 +104,7 @@ function rating_formula_calculation_validate($element, &$form_state, $form) {
   $validation = @$rpn->evaluate('0 + ' . $stripped_calculation, 'deg', FALSE);
 
   // Validate
-  if(is_object($validation)) {
+  if (is_object($validation)) {
     form_set_error('calculation', t('Could not parse the calculation.'));
   }
 }

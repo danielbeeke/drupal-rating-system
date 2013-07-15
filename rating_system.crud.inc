@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * CRUD functions for the rating system module.
+ */
 
 /**
  * Implements hook_entity_info().
@@ -75,7 +79,7 @@ function rating_formula_load($rating_formula_name = NULL) {
 *   Depending whether $type isset, an array of Rating formulas or a single one.
 */
 function rating_formula_load_multiple_by_entity_type_and_bundle($entity_type = NULL, $entity_bundle = NULL) {
-  // Set conditions.  
+  // Set conditions.
   $conditions = array();
   if (isset($entity_type)) {
     $conditions['entity_type'] = $entity_type;

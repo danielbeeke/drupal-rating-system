@@ -1,7 +1,7 @@
 <?php
-
 /**
- * This file replaces all the hook_tokens with the ones 
+ * @file
+ * This file replaces all the hook_tokens with the ones
  * provided inside includes/token_replacements.
  */
 
@@ -21,9 +21,9 @@ function rating_system_get_token_replacements() {
   unset($all_replacements[1]);
 
   foreach ($all_replacements as $replacement) {
-  	$replacement_exploded = explode('.', $replacement);
+    $replacement_exploded = explode('.', $replacement);
 
-  	$result[] = $replacement_exploded[2];
+    $result[] = $replacement_exploded[2];
   }
 
   return $result;
@@ -34,9 +34,9 @@ function rating_system_get_token_replacements() {
  */
 function rating_system_module_implements_alter(&$implementations, $hook) {
   if ($hook == 'tokens') {
-	foreach (rating_system_get_token_replacements() as $replacement) {
-	  $implementations[$replacement] = FALSE;
-	}
+  foreach (rating_system_get_token_replacements() as $replacement) {
+    $implementations[$replacement] = FALSE;
+  }
   }
 }
 
@@ -51,9 +51,9 @@ function rating_system_tokens($type, $tokens, array $data = array(), array $opti
   }
 
   foreach ($token_functions as $token_function) {
-  	$function_replacements = call_user_func($token_function, $type, $tokens, $data, $options);
+    $function_replacements = call_user_func($token_function, $type, $tokens, $data, $options);
 
-  	$replacements = array_merge($function_replacements, $replacements);
+    $replacements = array_merge($function_replacements, $replacements);
   }
 
   return $replacements;
