@@ -12,12 +12,8 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
   // Get all entity information
   $entity_info = entity_get_info();
 
-  // You can not rate a rating formula entity.
-  foreach($entity_info as $entity_key => $entity) {
-    if($entity_key == 'rating_formula') {
-      unset($entity_info[$entity_key]);
-    }
-  }
+  // No formulas on formulas.
+  unset($entity_info['rating_formula']);
 
   // Let's make some options for the select widget
   foreach ($entity_info as $entity_name => $entity) {
@@ -70,9 +66,8 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
 
   $form['tokens'] = array(
     '#theme' => 'token_tree',
-    '#token_types' => array('node'), // The token types that have specific context. Can be multiple token types like 'term' and/or 'user'
-    '#global_types' => TRUE, // A boolean TRUE or FALSE whether to include 'global' context tokens like [current-user:*] or [site:*]. Defaults to TRUE.
-    '#click_insert' => TRUE, // A boolean whether to include the 'Click this token to insert in into the the focused textfield' JavaScript functionality. Defaults to TRUE.
+    '#token_types' => array($rating_formula->entity_type),
+    '#global_types' => TRUE, 
   );
 
   $form['actions'] = array('#type' => 'actions');
@@ -93,9 +88,19 @@ function rating_formula_calculation_validate($element, &$form_state, $form) {
 
   $rpn = new Math_Rpn();
 
+  $stripped_calculation = $form_state['values']['calculation'];
+
+  $tokens = token_scan($stripped_calculation);
+
+  foreach ($tokens as $token_type) {
+    foreach ($token_type as $token => $token_key) {
+      $stripped_calculation = str_replace($token_key, 2, $stripped_calculation);
+    }
+  }
+
   // Try to do some math
   // This PEAR class has a deprecated warning therefore we use @.
-  $validation = @$rpn->evaluate($form_state['values']['calculation'], 'deg', FALSE);
+  $validation = @$rpn->evaluate($stripped_calculation, 'deg', FALSE);
 
   // Validate
   if(is_object($validation)) {

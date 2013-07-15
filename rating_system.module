@@ -3,6 +3,7 @@
 include_once('rating_system.crud.inc');
 include_once('rating_system.score.inc');
 include_once('rating_system.display.inc');
+include_once('rating_system.tokens.inc');
 
 /**
  * Access callback.
@@ -22,3 +23,4 @@ function rating_system_permission() {
     ),
   );
 }
+
