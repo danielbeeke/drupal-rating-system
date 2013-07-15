@@ -6,8 +6,14 @@
  * Returns a score for an entity.
  * The function calling this one is responsible for using revisions when needed.
  */
-function rating_system_get_entity_formula_score($entity, $rating_formula) {
+function rating_system_get_entity_formula_score($entity, $rating_formula, $time_from = 0, $time_to = REQUEST_TIME) {
   $formula = $rating_formula->calculation;
+
+  // Set the timespan
+  $entity->rating_system = array(
+  	'time_from' => $time_from,
+  	'time_to' => $time_to
+  );
 
   // Replace the tokens with real values.
   $formula = token_replace($formula, array(

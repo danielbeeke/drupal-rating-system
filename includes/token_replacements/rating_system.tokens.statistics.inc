@@ -50,9 +50,23 @@ function rating_system_statistics_tokens($type, $tokens, array $data = array(), 
  *   - timestamp: Integer for the timestamp of when the node was last viewed.
  */
 function rating_system_statistics_get($node) {
-
   if ($node->nid > 0) {
     // Retrieve an array with both totalcount and daycount.
-    return db_query('SELECT totalcount, daycount, timestamp FROM {node_counter} WHERE nid = :nid', array(':nid' => $node->nid), array('target' => 'slave'))->fetchAssoc();
+    $result = db_query('SELECT totalcount, daycount, timestamp FROM {node_counter} WHERE nid = :nid AND timestamp >= :time_from AND timestamp <= :time_to', 
+      array(
+        ':nid' => $node->nid,
+        ':time_from' => $node->rating_system['time_from'],
+        ':time_to' => $node->rating_system['time_to'],
+      ), array('target' => 'slave'))->fetchAssoc();
   }
+
+  if (!$result) {
+    $result = array(
+      'totalcount' => 0,
+      'daycount' => 0,
+      'timestamp' => 0
+    );
+  }
+
+  return $result;
 }
