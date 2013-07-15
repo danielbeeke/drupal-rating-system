@@ -100,6 +100,7 @@ function rating_formula_calculation_validate($element, &$form_state, $form) {
 
   // Try to do some math
   // This PEAR class has a deprecated warning therefore we use @.
+  // Add 0 + so we can use als oonly one token and no calculation.
   $validation = @$rpn->evaluate('0 + ' . $stripped_calculation, 'deg', FALSE);
 
   // Validate

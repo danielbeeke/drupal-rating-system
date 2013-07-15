@@ -18,4 +18,10 @@ Terms
 A dataset contains data within a timespan for entities. It could be pageviews, fields or fivestar ratings etc. Each different dataset has it’s own rating system sub module.
 
 ###Formula
-A formula is a calculation with tokens. These tokens will be filled with the data selected from the entity that is calculated. Example: [node:view-count] * 3 * [node:view-count-last-month]. 
+A formula is a calculation with tokens. These tokens will be filled with the data selected from the entity that is calculated. Example: [node:total-count] * 3 * [node:day-count]. 
+
+####Supported tokens for using with revisions.
+
+* [node:total-count]
+* [node:day-count]
+* [node:last-view]
