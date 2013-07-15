@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * This file replaces all the hook_tokens with the ones 
+ * provided inside includes/token_replacements.
+ */
+
 foreach (rating_system_get_token_replacements() as $replacement) {
   include_once('includes/token_replacements/rating_system.tokens.' . $replacement . '.inc');
 }
