@@ -64,9 +64,11 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
     '#default_value' => isset($rating_formula->calculation) ? $rating_formula->calculation : '',
   );
 
+  $entity_type = isset($rating_formula->entity_type) ? $rating_formula->entity_type : NULL;
+
   $form['tokens'] = array(
     '#theme' => 'token_tree',
-    '#token_types' => array($rating_formula->entity_type),
+    '#token_types' => array($entity_type),
     '#global_types' => TRUE,
   );
 

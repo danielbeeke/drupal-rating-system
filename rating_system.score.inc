@@ -29,6 +29,6 @@ function rating_system_get_entity_formula_score($entity, $rating_formula, $time_
 
   // Try to do some math
   // This PEAR class has a deprecated warning therefore we use @.
-  // Add 0 + so we can use als oonly one token and no calculation.
+  // Add 0 + so we can use one token and no calculation.
   return @$rpn->calculate('0 + ' . $formula, 'deg', FALSE);
 }
