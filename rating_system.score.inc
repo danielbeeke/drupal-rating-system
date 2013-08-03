@@ -18,7 +18,8 @@ function rating_system_get_entity_formula_score($entity_id, $rating_formula) {
       $formula = $rating_formula->calculation;
 
       // Load the entity.
-      $entity = end(entity_load($rating_formula->entity_type, array($entity_id)));
+      $entities = entity_load($rating_formula->entity_type, array($entity_id));
+      $entity = end($entities);
 
       // Replace the tokens with real values.
       $formula = token_replace($formula, array(
@@ -48,9 +49,9 @@ function rating_system_get_entity_formula_score($entity_id, $rating_formula) {
 function rating_system_get_cached_entity_formula_score($entity_id, $rating_formula) {
   $score = db_select('rating_score', 's')
   ->fields('s', array('score'))
-  ->condition('rfvid', $rating_formula->vid,'=')
-  ->condition('entity_id', $entity_id,'=')
-  ->condition('entity_type', $rating_formula->entity_type,'=')
+  ->condition('rfvid', $rating_formula->vid, '=')
+  ->condition('entity_id', $entity_id, '=')
+  ->condition('entity_type', $rating_formula->entity_type, '=')
   ->execute()
   ->fetchField();
 
