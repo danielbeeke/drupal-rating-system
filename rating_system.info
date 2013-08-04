@@ -3,3 +3,4 @@ description = "Provides a system to create rating algorythms"
 package = Rating System
 core = 7.x
 configure = admin/config/administration/rating_system
+files[] = includes/views/rating_system.views.inc

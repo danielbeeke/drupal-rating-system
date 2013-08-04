@@ -49,7 +49,7 @@ function rating_system_get_entity_formula_score($entity_id, $rating_formula) {
 function rating_system_get_cached_entity_formula_score($entity_id, $rating_formula) {
   $score = db_select('rating_score', 's')
   ->fields('s', array('score'))
-  ->condition('rfvid', $rating_formula->vid, '=')
+  ->condition('rfid', $rating_formula->vid, '=')
   ->condition('entity_id', $entity_id, '=')
   ->condition('entity_type', $rating_formula->entity_type, '=')
   ->execute()
@@ -63,7 +63,7 @@ function rating_system_get_cached_entity_formula_score($entity_id, $rating_formu
  */
 function rating_system_set_cached_entity_formula_score($entity_id, $rating_formula, $score) {
   $record = array(
-    'rfvid' => $rating_formula->vid,
+    'rfid' => $rating_formula->rfid,
     'entity_type' => $rating_formula->entity_type,
     'entity_id' => $entity_id,
     'score' => $score,
@@ -72,7 +72,7 @@ function rating_system_set_cached_entity_formula_score($entity_id, $rating_formu
 
   // Update the old record.
   if (rating_system_get_cached_entity_formula_score($entity_id, $rating_formula)) {
-    drupal_write_record('rating_score', $record, array('rfvid', 'entity_type', 'entity_id'));
+    drupal_write_record('rating_score', $record, array('rfid', 'entity_type', 'entity_id'));
   }
 
   // Or insert a new one.
