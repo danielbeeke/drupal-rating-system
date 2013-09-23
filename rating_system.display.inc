@@ -31,6 +31,9 @@ function rating_system_field_extra_fields() {
  * Implements hook_entity_load().
  */
 function rating_system_entity_load($entities, $type) {
+  // We have set this static inside get_entity_score.
+  $rating_system_current_entities = &drupal_static('rating_system_current_entities');
+
   if ($type != 'rating_formula') {
     $entity_info = entity_get_info($type);
 
@@ -41,19 +44,21 @@ function rating_system_entity_load($entities, $type) {
           $go_set = FALSE;
 
           // Difference between entity types with multiple bundles and single bundles.
-          if (!empty($entity_info['entity keys']['bundle'])) {
+          if (!empty($entity_info['entity keys']['bundle']) && !isset($rating_system_current_entities[$type][$entity_id])) {
             if ($entity->{$entity_info['entity keys']['bundle']} == $rating_formula->entity_bundle) {
               $go_set = TRUE;
             }
           }
-          else {
+          else if (!isset($rating_system_current_entities[$type][$entity_id])) {
             $go_set = TRUE;
           }
 
-          // Set the score in the entity.
-          // For the current display we don't need to set a date time.
-          // Emulations of current formulas and dates will be on a lower level.
-          $entity->{'rating_system_' . $rating_formula->name} = rating_system_get_entity_formula_score($entity_id, $rating_formula);
+          if ($go_set) {
+            // Set the score in the entity.
+            // For the current display we don't need to set a date time.
+            // Emulations of current formulas and dates will be on a lower level.
+            $entity->{'rating_system_' . $rating_formula->name} = rating_system_get_entity_formula_score($entity_id, $rating_formula);
+          }
         }
       }
     }

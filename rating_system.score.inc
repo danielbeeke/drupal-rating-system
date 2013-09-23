@@ -11,14 +11,22 @@
  */
 function rating_system_get_entity_formula_score($entity_id, $rating_formula) {
   $rating_system_cached_scores = &drupal_static(__FUNCTION__);
-  if (!isset($rating_system_cached_scores)) {
-    if ($rating_system_cached_scores[$rating_formula->rfid][$entity_id] = rating_system_get_cached_entity_formula_score($entity_id, $rating_formula)) {
+  if (!isset($rating_system_cached_scores[$entity_id])) {
+    $cached = rating_system_get_cached_entity_formula_score($entity_id, $rating_formula);
+
+    if (!empty($cached)) {
+      $rating_system_cached_scores[$rating_formula->rfid][$entity_id] = $cached;
     }
     else {
       $formula = $rating_formula->calculation;
 
+      // We check this static inside rating_system_entity_load so there will be no recursive shit.
+      $rating_system_current_entities = &drupal_static('rating_system_current_entities');
+      $rating_system_current_entities[$rating_formula->entity_type][$entity_id] = $entity_id;
+
       // Load the entity.
       $entities = entity_load($rating_formula->entity_type, array($entity_id));
+
       $entity = end($entities);
 
       // Replace the tokens with real values.
@@ -40,6 +48,7 @@ function rating_system_get_entity_formula_score($entity_id, $rating_formula) {
       rating_system_set_cached_entity_formula_score($entity_id, $rating_formula, $score);
     }
   }
+
   return $rating_system_cached_scores[$rating_formula->rfid][$entity_id];
 }
 
@@ -49,7 +58,7 @@ function rating_system_get_entity_formula_score($entity_id, $rating_formula) {
 function rating_system_get_cached_entity_formula_score($entity_id, $rating_formula) {
   $score = db_select('rating_score', 's')
   ->fields('s', array('score'))
-  ->condition('rfid', $rating_formula->vid, '=')
+  ->condition('rfid', $rating_formula->rfid, '=')
   ->condition('entity_id', $entity_id, '=')
   ->condition('entity_type', $rating_formula->entity_type, '=')
   ->execute()
@@ -79,5 +88,6 @@ function rating_system_set_cached_entity_formula_score($entity_id, $rating_formu
   else {
     drupal_write_record('rating_score', $record);
   }
+
   return $score;
 }
