@@ -33,6 +33,12 @@ function rating_system_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'flush' => array(
+        'description' => 'The flush setting of this rating_formula.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
       'name' => array(
         'description' => 'The machine name of this rating_formula, always treated as non-markup plain text.',
         'type' => 'varchar',

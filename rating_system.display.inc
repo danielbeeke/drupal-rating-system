@@ -43,6 +43,9 @@ function rating_system_entity_load($entities, $type) {
         foreach ($entities as $entity_id => $entity) {
           $go_set = FALSE;
 
+          // If our formule flushes on hook_entity_load we need to do it now.
+          $reset = $rating_formula->flush;
+
           // Difference between entity types with multiple bundles and single bundles.
           if (!empty($entity_info['entity keys']['bundle']) && !isset($rating_system_current_entities[$type][$entity_id])) {
             if ($entity->{$entity_info['entity keys']['bundle']} == $rating_formula->entity_bundle) {
@@ -57,7 +60,7 @@ function rating_system_entity_load($entities, $type) {
             // Set the score in the entity.
             // For the current display we don't need to set a date time.
             // Emulations of current formulas and dates will be on a lower level.
-            $entity->{'rating_system_' . $rating_formula->name} = rating_system_get_entity_formula_score($entity_id, $rating_formula);
+            $entity->{'rating_system_' . $rating_formula->name} = rating_system_get_entity_formula_score($entity_id, $rating_formula, $reset);
           }
         }
       }

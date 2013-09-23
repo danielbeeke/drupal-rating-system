@@ -57,6 +57,13 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
     '#description' => t('The entity bundle you want to attach this rating formula to.'),
   );
 
+  $form['flush'] = array(
+    '#title' => t('Flush settings'),
+    '#options' => rating_system_flush_options(),
+    '#type' => 'select',
+    '#default_value' => isset($rating_formula->flush) ? $rating_formula->flush : '',
+  );
+
   $form['calculation'] = array(
     '#title' => t('Calculation'),
     '#type' => 'textarea',
@@ -79,6 +86,17 @@ function rating_formula_form($form, $form_state, $rating_formula, $op = 'edit') 
   );
 
   return $form;
+}
+
+/**
+* Flush options.
+*/
+function rating_system_flush_options() {
+  return array(
+    1 => t('On entity load'),
+    2 => t('On entity update'),
+    3 => t('I will take care of the flushing myself')
+  );
 }
 
 /**

@@ -9,12 +9,12 @@
 /**
  * Returns a score for an entity.
  */
-function rating_system_get_entity_formula_score($entity_id, $rating_formula) {
+function rating_system_get_entity_formula_score($entity_id, $rating_formula, $reset) {
   $rating_system_cached_scores = &drupal_static(__FUNCTION__);
-  if (!isset($rating_system_cached_scores[$entity_id])) {
+  if (!isset($rating_system_cached_scores[$entity_id]) || $reset) {
     $cached = rating_system_get_cached_entity_formula_score($entity_id, $rating_formula);
 
-    if (!empty($cached)) {
+    if (!empty($cached) && !$reset) {
       $rating_system_cached_scores[$rating_formula->rfid][$entity_id] = $cached;
     }
     else {
