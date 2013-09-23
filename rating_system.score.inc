@@ -91,3 +91,16 @@ function rating_system_set_cached_entity_formula_score($entity_id, $rating_formu
 
   return $score;
 }
+
+/**
+ * Flushes a cached score for an entity.
+ */
+function rating_system_flush_cached_entity_formula_score($entity_id, $rating_formula) {
+  $rows_deleted = db_delete('rating_score')
+  ->condition('rfid', $rating_formula->rfid, '=')
+  ->condition('entity_id', $entity_id, '=')
+  ->condition('entity_type', $rating_formula->entity_type, '=')
+  ->execute();
+
+  return $rows_deleted;
+}

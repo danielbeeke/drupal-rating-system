@@ -42,9 +42,12 @@ function rating_system_entity_load($entities, $type) {
       foreach ($rating_formulas as $rating_formula) {
         foreach ($entities as $entity_id => $entity) {
           $go_set = FALSE;
+          $reset = FALSE;
 
           // If our formule flushes on hook_entity_load we need to do it now.
-          $reset = $rating_formula->flush;
+          if ($rating_formula->flush == 1) {
+            $reset = TRUE;
+          }
 
           // Difference between entity types with multiple bundles and single bundles.
           if (!empty($entity_info['entity keys']['bundle']) && !isset($rating_system_current_entities[$type][$entity_id])) {

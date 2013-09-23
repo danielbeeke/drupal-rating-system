@@ -38,3 +38,21 @@ function rating_system_views_api() {
     'path' => drupal_get_path('module', 'rating_system') . '/includes/views',
   );
 }
+
+/**
+ * Implements hook_entity_update().
+ */
+function rating_system_entity_update($entity, $type) {
+  if ($type != 'rating_formula') {
+    $entity_info = entity_get_info($type);
+
+    $rating_formulas = rating_formula_load_multiple_by_entity_type_and_bundle($type);
+    if ($rating_formulas) {
+      foreach ($rating_formulas as $rating_formula) {
+        if ($rating_formula->flush == 2) {
+          rating_system_flush_cached_entity_formula_score($entity->{$entity_info['entity keys']['id']}, $rating_formula);
+        }
+      }
+    }
+  }
+}
