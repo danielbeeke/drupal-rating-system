@@ -15,8 +15,12 @@ function rating_system_field_extra_fields() {
     foreach ($rating_formulas as $rating_formula) {
       $extra[$rating_formula->entity_type][$rating_formula->entity_bundle] = array(
         'display' => array(
-          'rating_system_' . $rating_formula->name => array(
-            'label' => $rating_formula->label . ' ' . t('(Rating system)'),
+          'rating_system_' . $rating_formula->name . '_score' => array(
+            'label' => $rating_formula->label . ' ' . t('(Rating system score)'),
+            'weight' => 0,
+          ),
+          'rating_system_' . $rating_formula->name . '_percentage' => array(
+            'label' => $rating_formula->label . ' ' . t('(Rating system percentage)'),
             'weight' => 0,
           ),
         )
@@ -63,7 +67,11 @@ function rating_system_entity_load($entities, $type) {
             // Set the score in the entity.
             // For the current display we don't need to set a date time.
             // Emulations of current formulas and dates will be on a lower level.
-            $entity->{'rating_system_' . $rating_formula->name} = rating_system_get_entity_formula_score($entity_id, $rating_formula, $reset);
+            rating_system_get_formula_min_max($rating_formula);
+            $entity->{'rating_system_' . $rating_formula->name} = array(
+              'score' => rating_system_get_entity_formula_score($entity_id, $rating_formula, $reset),
+              'percentage' => rating_system_get_entity_formula_percentage($entity_id, $rating_formula, $reset),
+            );
           }
         }
       }
@@ -85,13 +93,21 @@ function rating_system_entity_view($entity, $type, $view_mode, $langcode) {
     $rating_formulas = rating_formula_load_multiple_by_entity_type_and_bundle($type, $bundle);
     if ($rating_formulas) {
       foreach ($rating_formulas as $rating_formula) {
-        $score = $entity->{'rating_system_' . $rating_formula->name};
+        $score = $entity->{'rating_system_' . $rating_formula->name}['score'];
+        $percentage = $entity->{'rating_system_' . $rating_formula->name}['percentage'];
 
         // Attach our extra field.
-        $entity->content['rating_system_' . $rating_formula->name] = array(
+        $entity->content['rating_system_' . $rating_formula->name . '_score'] = array(
           '#type' => 'markup',
           '#markup' => '<span>' . $score . '</span>'
         );
+
+        // Attach our extra field.
+        $entity->content['rating_system_' . $rating_formula->name . '_percentage'] = array(
+          '#type' => 'markup',
+          '#markup' => '<span>' . $percentage . '</span>'
+        );
+
       }
     }
   }
