@@ -45,7 +45,6 @@ function rating_system_views_data() {
     ),
   );
 
-
   return $data;
 }
 

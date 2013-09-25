@@ -246,51 +246,6 @@ function rating_system_schema() {
     ),
   );
 
-
-  $schema['rating_percentage'] = array(
-    'description' => 'The base table for rating scores in percentages.',
-    'fields' => array(
-      'rfid' => array(
-        'description' => 'The primary identifier for a rating_formula revision id.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => FALSE,
-        'default' => NULL,
-      ),
-      'timestamp' => array(
-        'description' => 'The Unix timestamp when the rating_score was calculated.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'percentage' => array(
-        'description' => 'The percentage.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-      'entity_type' => array(
-        'type' => 'varchar',
-        'length' => 32,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => "The system name of the entity this rating group is attached to.",
-      ),
-      'entity_id' => array(
-        'description' => 'The entity id for which this score is.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-      ),
-    ),
-    'indexes' => array(
-      'rating_score_entity_id' => array('entity_id'),
-    ),
-    'unique keys' => array(
-      'rfid_entity_id_entity_type' => array('rfid', 'entity_id', 'entity_type'),
-    ),
-  );
-
   $schema['rating_score_revision'] = array(
     'description' => 'The revision table for rating scores.',
     'fields' => array(

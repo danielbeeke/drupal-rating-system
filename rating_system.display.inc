@@ -67,10 +67,27 @@ function rating_system_entity_load($entities, $type) {
             // Set the score in the entity.
             // For the current display we don't need to set a date time.
             // Emulations of current formulas and dates will be on a lower level.
-            rating_system_get_formula_min_max($rating_formula);
+            $score = rating_system_get_entity_formula_score($entity_id, $rating_formula, $reset);
+            $min_max = rating_system_get_formula_min_max($rating_formula);
+
+            if ($score == $min_max['min']) {
+              $percentage = 0;
+            } else if ($score == $min_max['max']) {
+              $percentage = 100;
+            }
+            else {
+              $delta = $min_max['max'] - $min_max['min'];
+              $a = $score - $min_max['min'];
+              $b = $delta / $a;
+              $percentage = 100 / $b;
+            }
+
+            // Rounding.
+            $percentage = round($percentage);
+
             $entity->{'rating_system_' . $rating_formula->name} = array(
-              'score' => rating_system_get_entity_formula_score($entity_id, $rating_formula, $reset),
-              'percentage' => rating_system_get_entity_formula_percentage($entity_id, $rating_formula, $reset),
+              'score' => $score,
+              'percentage' => $percentage,
             );
           }
         }
@@ -111,4 +128,34 @@ function rating_system_entity_view($entity, $type, $view_mode, $langcode) {
       }
     }
   }
+}
+
+/**
+ * Returns the min and max for a formula.
+ */
+function rating_system_get_formula_min_max($rating_formula) {
+  $query =  db_select('rating_score', 's');
+  $query->condition('rfid', $rating_formula->rfid, '=');
+  $query->condition('entity_type', $rating_formula->entity_type, '=');
+  $query->addExpression('MAX(score)', 'max_score');
+  $query->range(0, 1);
+
+  $max = $query->execute()->fetchField();
+
+  $query =  db_select('rating_score', 's');
+  $query->condition('rfid', $rating_formula->rfid, '=');
+  $query->condition('entity_type', $rating_formula->entity_type, '=');
+  $query->addExpression('MIN(score)', 'min_score');
+  $query->range(0, 1);
+
+  $min = $query->execute()->fetchField();
+
+  if ($min == 0 || $max == 0) {
+    return;
+  }
+
+  return array(
+    'min' => $min,
+    'max' => $max
+  );
 }
